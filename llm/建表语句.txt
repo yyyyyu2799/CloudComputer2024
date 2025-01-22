@@ -1,0 +1,19 @@
+CREATE TABLE education (
+    record_id INT NOT NULL AUTO_INCREMENT COMMENT '主键，唯一标识',
+    teacher_id INT NOT NULL COMMENT '教师ID',
+    teacher_name VARCHAR(100) NOT NULL COMMENT '教师姓名',
+    course_id INT NOT NULL COMMENT '课程ID',
+    course_name VARCHAR(100) NOT NULL COMMENT '课程名称',
+    semester_name VARCHAR(100) NOT NULL COMMENT '学期名称（如2024春季）',
+    homework_load FLOAT(2,1) NOT NULL COMMENT '作业量评分（1~5）',
+    pass_rate FLOAT(3,2) NOT NULL COMMENT '通过率（0~1，表示百分比）',
+    average_score FLOAT(5,1) NOT NULL COMMENT '平均分（0~100）',
+    difficulty FLOAT(2,1) NOT NULL COMMENT '课程难度评分（1~5）',
+    course_feedback TEXT COMMENT '文本型课程评价',
+    classroom_atmosphere FLOAT(2,1) NOT NULL COMMENT '课堂氛围评分（1~5）',
+    learning_gain FLOAT(2,1) NOT NULL COMMENT '学习收获评分（1~5）',
+    PRIMARY KEY (record_id),
+    INDEX idx_teacher_id (teacher_id),
+    INDEX idx_course_id (course_id),
+    INDEX idx_semester_name (semester_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='教师课程评价表';

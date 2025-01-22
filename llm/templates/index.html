@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TQBot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 300px;
+            background-color: #2e3b4e;
+            color: #ffffff;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            right: 0; /* 将侧边栏固定在右边 */
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background-color: #1f2b36;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .sidebar .section-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFFFFF;
+            margin-top: 20px;
+        }
+
+        .sidebar .section-content {
+            margin-top: 10px;
+            padding-left: 10px;
+        }
+
+        .sidebar .section-content ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar .section-content ul li {
+            padding: 10px 0;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #d1d1d1;
+            transition: color 0.3s ease;
+        }
+
+        .sidebar .section-content ul li:hover {
+            color: #9B3636;
+        }
+
+        .sidebar .section-content ul li:nth-child(1) {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #f5c6cb;
+        }
+
+        .sidebar .section-content ul li:nth-child(2) {
+            font-size: 1.15rem;
+            color: #f8d7da;
+        }
+
+        .sidebar .section-content ul li:nth-child(3) {
+            font-size: 1.1rem;
+            color: #fce8e8;
+        }
+
+        .sidebar .section-content ul li:nth-child(4) {
+            font-size: 1rem;
+            color: #d1d1d1;
+        }
+		.sidebar .section-content ul li:hover {
+        color: #9B3636; /* 鼠标悬停时颜色变化 */
+    }
+
+        .sidebar .divider {
+            height: 1px;
+            background-color: #4e5d6c;
+            margin: 15px 0;
+        }
+		/* 问题推荐列表样式 */
+    	.sidebar .recommended-questions ul {
+        	list-style-type: none; /* 去掉点 */
+        	padding: 10px 0; /* 清除默认内边距 */
+        	margin: 0; /* 清除默认外边距 */
+    	}
+		/* Recommended Questions Style */
+        .sidebar .recommended-questions ul li {
+			list-style-type: none;
+            padding: 10px 0;
+            cursor: pointer;
+            font-size: 1rem;
+			color: #d1d1d1;
+        }
+		.sidebar .recommended-questions ul li:hover {
+        color: #9B3636; /* 鼠标悬停时颜色变化 */
+    }
+        /* Main Content */
+        .main-content {
+            margin-right: 300px; /* 调整主内容区域 */
+            margin-top: 60px; /* 为顶部导航栏留出空间 */
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+
+		/* Top Bar Styling */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: calc(100% - 300px); /* 除去侧边栏宽度 */
+            height: 60px;
+            background-color: #FFFFFF; /* 上边栏颜色，与侧边栏区分 */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .top-bar h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #9B3636;
+        }
+
+        .top-bar button {
+            background-color: #9B3636;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .top-bar button:hover {
+            background-color: #7e2c2c;
+        }
+        /* Chat Box Styling */
+        .chat-box {
+            max-height: 70vh;
+            overflow-y: auto;
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-message {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+
+        .chat-message.ai {
+            justify-content: flex-start;
+        }
+
+        .chat-message .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 10px;
+        }
+
+        .chat-message .message-content {
+            display: inline-block;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .chat-message.user .message-content {
+            background-color: #9B3636;
+            color: #ffffff;
+        }
+
+        .chat-message.ai .message-content {
+            background-color: #e9ecef;
+            color: #212529;
+        }
+
+        /* Input Area */
+        .input-area {
+            display: flex;
+            position: fixed;
+            bottom: 0;
+            right: 300px; /* 调整输入框区域 */
+            width: calc(100% - 300px);
+            background-color: #ffffff;
+            padding: 10px 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+        }
+
+        .input-area button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            border: none;
+            background-color: #9B3636;
+            color: #ffffff;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+	<!-- 顶部导航栏 -->
+    <div class="top-bar">
+        <h1>TQBot</h1>
+        <button onclick="alert('欢迎使用TQBot！')">帮助</button>
+    </div>
+    <div class="main-content">
+        <div class="chat-box" id="chat-box">
+            <!-- Chat messages will go here -->
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="user-input" placeholder="请输入您的问题...">
+        <button onclick="sendMessage()">发送</button>
+    </div>
+
+    <div class="sidebar">
+
+        <!-- 热门问题 -->
+        <div class="section-title">热门问题</div>
+        <div class="section-content">
+            <ul>
+                <li>1. 如何提高教学效率？</li>
+                <li>2. 如何评估学生的学习效果？</li>
+                <li>3. 教师的绩效如何评估？</li>
+                <li>4. 哪些老师需要改进？</li>
+            </ul>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- 问题推荐 -->
+        <div class="section-title">问题推荐</div>
+        <div class="recommended-questions">
+            <ul>
+                <li>什么课程比较推荐？</li>
+                <li>有什么推荐的老师吗？</li>
+                <li>云计算系统课会不会挂啊？</li>
+                <li>赵明昊老师有什么需要改进的地方？</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+
+        function addMessage(sender, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender}`;
+
+            if (sender === 'ai') {
+                const avatar = document.createElement('img');
+                avatar.className = 'avatar';
+                avatar.src = "{{ url_for('static', filename='images/OIP.jpg') }}"; // Replace with actual AI avatar URL
+                messageDiv.appendChild(avatar);
+            }
+
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.innerText = content;
+
+            messageDiv.appendChild(messageContent);
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        /*function sendMessage() {
+            const userInput = document.getElementById('user-input');
+            const userMessage = userInput.value.trim();
+            if (!userMessage) return;
+
+            addMessage('user', userMessage);
+            userInput.value = '';
+
+            setTimeout(() => {
+                const aiResponse = `AI 回答: 您的问题 "${userMessage}" 的答案在这里！`;
+                addMessage('ai', aiResponse);
+            }, 1000);
+        }*/
+
+
+        function sendMessage() {
+            const userInput = document.getElementById('user-input');
+            const userMessage = userInput.value.trim();
+            if (!userMessage) return;
+
+            addMessage('user', userMessage);
+            userInput.value = '';
+
+            setTimeout(() => {
+                // 使用 fetch 向后端发送 POST 请求
+                fetch('http://127.0.0.1:5000/get_answer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question: userMessage })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // 在前端接收并显示后端返回的答案
+                    const aiResponse = `${data.answer}`;
+                    addMessage('ai', aiResponse);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }, 1000);
+        }
+
+
+        window.onload = function() {
+            setTimeout(() => {
+                addMessage('ai', '你好，我是TQBot，有什么可以帮到您的吗？');
+            }, 500);
+        };
+			// 获取问题推荐的所有列表项
+		const recommendedQuestions = document.querySelectorAll('.recommended-questions ul li, .section-content ul li');
+
+		// 为每个问题添加点击事件，将问题填充到输入框中
+		recommendedQuestions.forEach(question => {
+    		question.addEventListener('click', function () {
+        		let questionText = this.innerText; // 获取问题文本
+        		// 去除前面的标号（例如 "1. 如何提高教学效率？"）
+        		questionText = questionText.replace(/^\d+\.\s*/, ''); 
+        		document.getElementById('user-input').value = questionText; // 填充到输入框
+    		});
+		});
+
+    </script>
+</body>
+</html>
